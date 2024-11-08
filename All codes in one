@@ -1,0 +1,463 @@
+1)
+import math
+
+# Initialize the board
+board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+
+
+# Function to print the board
+def print_board():
+    print(f"| {board[0]} | {board[1]} | {board[2]} |")
+    print("-----------")
+    print(f"| {board[3]} | {board[4]} | {board[5]} |")
+    print("-----------")
+    print(f"| {board[6]} | {board[7]} | {board[8]} |")
+
+
+# Check if a player has won
+def check_winner(player):
+    win_conditions = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # columns
+        [0, 4, 8], [2, 4, 6]              # diagonals
+    ]
+    for condition in win_conditions:
+        if board[condition[0]] == player and board[condition[1]] == player and board[condition[2]] == player:
+            return True
+    return False
+
+# Check if the board is full (a draw)
+def is_draw():
+    return ' ' not in board
+
+# Minimax algorithm for AI move
+def minimax(is_maximizing):
+    if check_winner('O'):
+        return 1
+    elif check_winner('X'):
+        return -1
+    elif is_draw():
+        return 0
+
+    if is_maximizing:
+        best_score = -math.inf
+        for i in range(9):
+            if board[i] == ' ':
+                board[i] = 'O'
+                score = minimax(False)
+                board[i] = ' '
+                best_score = max(score, best_score)
+        return best_score
+    else:
+        best_score = math.inf
+        for i in range(9):
+            if board[i] == ' ':
+                board[i] = 'X'
+                score = minimax(True)
+                board[i] = ' '
+                best_score = min(score, best_score)
+        return best_score
+
+# AI move using minimax
+def ai_move():
+    best_score = -math.inf
+    best_move = 0
+    for i in range(9):
+        if board[i] == ' ':
+            board[i] = 'O'
+            score = minimax(False)
+            board[i] = ' '
+            if score > best_score:
+                best_score = score
+                best_move = i
+    board[best_move] = 'O'
+
+# Main game loop
+def play_game():
+    print("Welcome to Tic Tac Toe!")
+    print_board()
+
+    while True:
+        # Player's turn
+        move = int(input("Enter your move (1-9): ")) - 1
+        if board[move] == ' ':
+            board[move] = 'X'
+        else:
+            print("Invalid move. Try again.")
+            continue
+
+        print_board()
+        if check_winner('X'):
+            print("Congratulations, you win!")
+            break
+        if is_draw():
+            print("It's a draw!")
+            break
+
+        # AI's turn
+        ai_move()
+        print("AI's move:")
+        print_board()
+
+        if check_winner('O'):
+            print("AI wins!")
+            break
+        if is_draw():
+            print("It's a draw!")
+            break
+
+play_game()
+
+------------------------------------------------------------------------------------
+2)
+# Import necessary libraries
+import re
+
+# Define responses for common inquiries
+responses = {
+    "hello": "Hello! How can I assist you today?",
+    "price": "Can you please specify which product or service you're asking about?",
+    "information": "Our company name is ABC Enterprises, and we are in the business of electronics equipment.",
+    "name": "Our company name is ABC Enterprises Pvt. Ltd.",
+    "hours": "Our business hours are Monday to Friday, 9 AM to 5 PM.",
+    "address": "We are located at 123 Main Street, Springfield.",
+    "contact": "You can reach us at contact@example.com or call us at (555) 123-4567.",
+    "help": "I am here to help you. Please ask me anything.",
+    "default": "I'm sorry, I didn't understand that. Can you please provide more details?"
+}
+
+def get_response(message):
+    # Normalize the message to lowercase for easier matching
+    message = message.lower()
+    
+    # Check for a matching response
+    for key in responses:
+        if re.search(r'\b' + re.escape(key) + r'\b', message):
+            return responses[key]
+    
+    # Return default response if no match is found
+    return responses["default"]
+
+def chatbot():
+    print("Welcome to our Customer Service Chatbot! Type 'exit' to end the chat. Ask me anything about the organization.")
+    
+    while True:
+        user_input = input("You: ")
+        
+        if user_input.lower() == 'exit':
+            print("Chatbot: Goodbye! Have a great day!")
+            break
+        
+        response = get_response(user_input)
+        print(f"Chatbot: {response}")
+
+# Run the chatbot
+if __name__ == "_main_":
+    chatbot()
+------------------------------------------------------------------------------------------
+3)
+ # Define a graph of Indian cities with distances
+GRAPH = {
+    'Mumbai': {'Pune': 150, 'Surat': 290},
+    'Pune': {'Mumbai': 150, 'Nashik': 210},
+    'Surat': {'Mumbai': 290, 'Ahmedabad': 260},
+    'Ahmedabad': {'Surat': 260, 'Jaipur': 660},
+    'Nashik': {'Pune': 210, 'Indore': 400},
+    'Indore': {'Nashik': 400, 'Jaipur': 500},
+    'Jaipur': {'Ahmedabad': 660, 'Delhi': 280},
+    'Delhi': {'Jaipur': 280, 'Agra': 210},
+    'Agra': {'Delhi': 210, 'Kanpur': 290},
+    'Kanpur': {'Agra': 290, 'Lucknow': 90},
+    'Lucknow': {'Kanpur': 90, 'Varanasi': 320},
+    'Varanasi': {'Lucknow': 320, 'Patna': 250},
+    'Patna': {'Varanasi': 250, 'Kolkata': 560},
+    'Kolkata': {}
+}
+
+# Heuristic (straight-line distance) to reach Kolkata
+HEURISTIC = {
+    'Mumbai': 2000, 'Pune': 1900, 'Surat': 1800, 'Ahmedabad': 1650,
+    'Nashik': 1700, 'Indore': 1600, 'Jaipur': 1500, 'Delhi': 1300,
+    'Agra': 1200, 'Kanpur': 1000, 'Lucknow': 900, 'Varanasi': 600,
+    'Patna': 300, 'Kolkata': 0
+}
+
+from queue import PriorityQueue
+
+def best_first_search(start, goal):
+    queue = PriorityQueue()
+    queue.put((HEURISTIC[start], 0, start, [start]))
+
+    while not queue.empty():
+        _, cost, city, path = queue.get()
+        
+        if city == goal:
+            return cost, path
+        
+        for next_city, distance in GRAPH[city].items():
+            total_cost = cost + distance
+            queue.put((HEURISTIC[next_city], total_cost, next_city, path + [next_city]))
+
+def main():
+    source = input("Enter starting city: ").strip()
+    destination = input("Enter destination city: ").strip()
+    
+    if source in GRAPH and destination in GRAPH:
+        cost, path = best_first_search(source, destination)
+        print("Path:", " -> ".join(path))
+        print("Total cost:", cost)
+    else:
+        print("City not found.")
+
+if __name__ == "__main__":
+    main()
+
+----------------------------------------------------------------------------------
+4)
+# Heuristic values representing distance to the goal (Kolkata)
+HEURISTIC = {
+    'Mumbai': 2000, 'Pune': 1900, 'Surat': 1800, 'Ahmedabad': 1650,
+    'Nashik': 1700, 'Indore': 1600, 'Jaipur': 1500, 'Delhi': 1300,
+    'Agra': 1200, 'Kanpur': 1000, 'Lucknow': 900, 'Varanasi': 600,
+    'Patna': 300, 'Kolkata': 0
+}
+
+# Graph representing connections between cities with distances (for simplicity, using direct neighbors)
+GRAPH = {
+    'Mumbai': ['Pune', 'Surat'],
+    'Pune': ['Mumbai', 'Nashik'],
+    'Surat': ['Mumbai', 'Ahmedabad'],
+    'Ahmedabad': ['Surat', 'Indore', 'Jaipur'],
+    'Nashik': ['Pune', 'Indore'],
+    'Indore': ['Nashik', 'Ahmedabad', 'Kanpur'],
+    'Jaipur': ['Ahmedabad', 'Delhi'],
+    'Delhi': ['Jaipur', 'Agra'],
+    'Agra': ['Delhi', 'Kanpur'],
+    'Kanpur': ['Indore', 'Agra', 'Lucknow'],
+    'Lucknow': ['Kanpur', 'Varanasi'],
+    'Varanasi': ['Lucknow', 'Patna'],
+    'Patna': ['Varanasi', 'Kolkata'],
+    'Kolkata': []
+}
+
+def hill_climb(start, goal):
+    """Hill Climbing algorithm to reach the goal city (Kolkata) from the start city"""
+    current_city = start
+    path = [current_city]
+    
+    while current_city != goal:
+        # Get neighbors of the current city
+        neighbors = GRAPH[current_city]
+        
+        # Find the neighbor with the lowest heuristic value
+        next_city = None
+        lowest_heuristic = HEURISTIC[current_city]
+        
+        for neighbor in neighbors:
+            if HEURISTIC[neighbor] < lowest_heuristic:
+                lowest_heuristic = HEURISTIC[neighbor]
+                next_city = neighbor
+        
+        # If no neighbor is closer, the algorithm is "stuck"
+        if next_city is None:
+            print("Stuck in a local maximum. No path found.")
+            return path
+        
+        # Move to the next city
+        current_city = next_city
+        path.append(current_city)
+    
+    return path
+
+def main():
+    start_city = 'Mumbai'
+    goal_city = 'Kolkata'
+    print("Starting Hill Climbing search from", start_city, "to", goal_city)
+    path = hill_climb(start_city, goal_city)
+    print("Path found:", " -> ".join(path))
+
+if __name__ == "_main_":
+    main()
+
+--------------------------------------------------------------------------------------
+5)N = int(input("Enter number of queens: "))
+Board = [['_' for _ in range(N)] for _ in range(N)]
+
+def printBoard(Board):
+    for row in Board:
+        print(" ".join(row))
+    print()
+
+def isSafe(Board, row, col):
+    for i in range(col):
+        if Board[row][i] == 'Q':
+            return False
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if Board[i][j] == 'Q':
+            return False
+    for i, j in zip(range(row, N), range(col, -1, -1)):
+        if Board[i][j] == 'Q':
+            return False
+    return True
+
+def SolveQueen(Board, col):
+    if col >= N:
+        return True
+    for i in range(N):
+        if isSafe(Board, i, col):
+            Board[i][col] = 'Q'
+            printBoard(Board)
+            if SolveQueen(Board, col + 1):
+                return True
+            Board[i][col] = '_'
+            print("\nBacktracking...")
+    return False
+
+if SolveQueen(Board, 0) == False:
+    print("\nNo solution exists")
+else:
+    print("\nFinal Solution:")
+    printBoard(Board)
+
+
+6)
+state = {
+    'A': None,  # Block A is on the table (None means on the table)
+    'B': None,  # Block B is on the table
+    'C': None,  # Block C is on the table
+    'clear_A': True,  # Block A is clear
+    'clear_B': True,  # Block B is clear
+    'clear_C': True   # Block C is clear
+}
+
+# Define the goal
+goal = [
+    ('on', 'A', 'B'),  # Goal is to place A on top of B
+    ('on', 'B', 'C')   # Goal is to place B on top of C
+]
+
+# Function to check if the current state satisfies the goal
+def is_goal_satisfied(goal, state):
+    for condition in goal:
+        action, x, y = condition
+        if action == 'on' and state.get(x) != y:
+            return False
+    return True
+
+# Function to apply an action
+def apply_action(action, x, y, state):
+    if action == 'on':
+        state[x] = y       # Move block x on top of block y
+        state[f'clear_{x}'] = False  # Block x is no longer clear
+        state[f'clear_{y}'] = True   # Block y is now clear
+
+# Goal stack planning approach
+def goal_stack_planning(state, goal):
+    stack = goal[::-1]  # Reverse the goal stack for processing
+
+    while stack:
+        condition = stack.pop()  # Pop from the goal stack
+        action, x, y = condition
+
+        # Check if the goal is already satisfied
+        if action == 'on' and state.get(x) == y:
+            continue  # Skip if the goal is already achieved
+        
+        # Apply the action
+        apply_action(action, x, y, state)
+        print(f"Moved {x} on {y}. Current state:")
+        print(state)
+
+# Run the goal stack planning
+goal_stack_planning(state, goal)
+
+# Final state after all actions
+print("Final state:")
+print(state)
+
+
+7)
+# Rule definitions for diagnoses
+rules = [
+    (["fever", "cough", "shortness of breath"], "COVID-19"),
+    (["fever", "sore throat", "swollen lymph nodes"], "Strep Throat"),
+    (["headache", "sensitivity to light", "stiff neck"], "Meningitis"),
+    (["fever", "rash", "joint pain"], "Dengue Fever"),
+    (["nausea", "vomiting", "abdominal pain"], "Gastritis"),
+    (["fever", "muscle pain", "fatigue"], "Influenza (Flu)"),
+    (["chest pain", "shortness of breath", "fatigue"], "Heart Disease"),
+]
+
+def diagnose(symptoms):
+    symptoms = {symptom.strip().lower() for symptom in symptoms}  # Clean input
+    for rule_symptoms, diagnosis in rules:
+        if symptoms.issuperset(set(rule_symptoms)):
+            return diagnosis
+    return "Diagnosis not found"
+
+def get_diagnosis():
+    symptoms = input("Enter your symptoms (comma separated): ").split(", ")
+    print(f"Diagnosis: {diagnose(symptoms)}")
+
+if __name__ == "_main_":
+    get_diagnosis()
+
+
+-----------------------------------------------------------------------------------
+8)
+import heapq
+
+# Start and Goal states
+start = [1, 2, 3, 4, 0, 6, 7, 5, 8]
+goal = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+
+# Manhattan Distance Heuristic
+def manhattan(state):
+    dist = 0
+    for i in range(9):
+        if state[i] != 0:
+            goal_pos = goal.index(state[i])
+            dist += abs(i // 3 - goal_pos // 3) + abs(i % 3 - goal_pos % 3)
+    return dist
+
+# Generate neighbors (valid moves)
+def neighbors(state):
+    neighbors_list = []
+    zero_pos = state.index(0)
+    row, col = divmod(zero_pos, 3)
+    moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Up, Down, Left, Right
+
+    for dr, dc in moves:
+        r, c = row + dr, col + dc
+        if 0 <= r < 3 and 0 <= c < 3:
+            new_pos = r * 3 + c
+            new_state = list(state)
+            new_state[zero_pos], new_state[new_pos] = new_state[new_pos], new_state[zero_pos]
+            neighbors_list.append(tuple(new_state))
+    return neighbors_list
+
+# A* algorithm
+def a_star(start):
+    open_list = []
+    heapq.heappush(open_list, (manhattan(start), 0, tuple(start)))  # (f, g, state)
+    closed_list = set()
+
+    while open_list:
+        f, g, current_state = heapq.heappop(open_list)
+
+        if list(current_state) == goal:  # Goal reached
+            return g  # Number of moves
+
+        if current_state in closed_list:
+            continue
+        closed_list.add(current_state)
+
+        for neighbor in neighbors(current_state):
+            if neighbor not in closed_list:
+                heapq.heappush(open_list, (g + 1 + manhattan(neighbor), g + 1, neighbor))
+
+    return -1  # No solution
+
+# Solve the puzzle
+moves = a_star(start)
+print(f"Solution found in {moves} moves." if moves != -1 else "No solution found.")
